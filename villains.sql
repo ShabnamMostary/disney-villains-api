@@ -32,3 +32,5 @@ VALUES ('Captain Hook','Peter Pan','captain-hook'),
 ('Shere Khan','The Jungle Book','shere-khan'),
 ('Ursula','The Little Mermaid','ursula');
 SELECT * FROM villains;
+CREATE USER 'admin'@'localhost' IDENTIFIED WITH mysql_native_password BY 'asdiop';
+GRANT ALL ON disney.* TO 'admin'@'localhost';
