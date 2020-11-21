@@ -4,6 +4,10 @@ const villains = (connection, Sequelize) => {
     name: { type: Sequelize.STRING },
     movie: { type: Sequelize.STRING },
     slug: { type: Sequelize.STRING },
+  }, {
+    defaultScope: {
+      attributes: { exclude: ['id', 'createdAt', 'updatedAt', 'deletedAt'] }
+    }
   }, { paranoid: true })
 }
 
