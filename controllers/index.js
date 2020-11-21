@@ -9,5 +9,17 @@ const getVillainBySlug = (request, response) => {
 
   return response.send(foundVillain)
 }
+const addNewVillain = (request, response) => {
+  const { name, movie, slug } = request.body
 
-module.exports = { getAllVillains, getVillainBySlug }
+  if (!name || !movie || !slug) {
+    return response.status(400).send('Following items are required name,movie and slug')
+  }
+  const newVillain = { name, movie, slug }
+
+  villains.push(newVillain)
+
+  return response.status(201).send(newVillain)
+}
+
+module.exports = { getAllVillains, getVillainBySlug, addNewVillain }
