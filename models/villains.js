@@ -7,4 +7,4 @@ const villains = (connection, Sequelize) => {
   }, { paranoid: true })
 }
 
-module.export = villains
+module.exports = villains

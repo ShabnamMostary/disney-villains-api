@@ -1,23 +1,24 @@
-const villains = require('../villains')
-const getAllVillains = (request, response) => {
-  return response.send(villains)
+const models = require('../models')
+const getAllVillains = async (request, response) => {
+  const result = await models.villains.findAll() // models.tablename
+
+  return response.send(result)
 }
 
-const getVillainBySlug = (request, response) => {
+const getVillainBySlug = async (request, response) => {
   const { slug } = request.params
-  const foundVillain = villains.filter((villain) => villain.slug === slug)
+  const foundVillain = await models.villains.findOne({ where: { slug } })
 
   return response.send(foundVillain)
 }
-const addNewVillain = (request, response) => {
+const addNewVillain = async (request, response) => {
   const { name, movie, slug } = request.body
 
   if (!name || !movie || !slug) {
     return response.status(400).send('Following items are required name,movie and slug')
   }
-  const newVillain = { name, movie, slug }
 
-  villains.push(newVillain)
+  const newVillain = await models.villains.create({ name, movie, slug })
 
   return response.status(201).send(newVillain)
 }
