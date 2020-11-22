@@ -1,6 +1,6 @@
-const models = require('../models')
+const models = require('../models') // model is an object with a property villains
 const getAllVillains = async (request, response) => {
-  const result = await models.villains.findAll() // models.tablename
+  const result = await models.villains.findAll()
 
   return response.send(result)
 }

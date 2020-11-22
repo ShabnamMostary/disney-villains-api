@@ -1,4 +1,4 @@
-const villains = (connection, Sequelize) => {
+const villains = (connection, Sequelize) => { // defining a function villain, to read data from villains table
   return connection.define('villains', {
     id: { type: Sequelize.INTEGER, autoIncrement: true, primaryKey: true },
     name: { type: Sequelize.STRING },

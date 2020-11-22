@@ -1,5 +1,5 @@
-const Sequelize = require('sequelize')
-const villainsModel = require('./villains')// return function defination to read data
+const Sequelize = require('sequelize')// sequelize library
+const villainsModel = require('./villains')//  function defination to read data
 
 const connection = new Sequelize('disney', 'admin', 'asdiop', { // {database,user,password)}
   host: 'localhost', dialect: 'mysql'

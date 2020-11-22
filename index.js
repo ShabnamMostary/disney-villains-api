@@ -1,7 +1,6 @@
 const express = require('express')
 const bodyParser = require('body-parser')
 const { getAllVillains, getVillainBySlug, addNewVillain } = require('./controllers/index')
-
 const app = express()
 
 app.get('/villains', getAllVillains)
