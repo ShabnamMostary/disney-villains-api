@@ -38,6 +38,16 @@ describe('Controllers - disneyVillainsApi', () => {
       expect(stubbedFindOne).to.have.been.calledWith({ where: { slug: 'Jafar' } })
       expect(stubbedSend).to.have.been.calledWith(singleVillain)
     })
+    it('returns status 404 when no Villain is found', async () => {
+      const request = { params: { slug: 'xyz' } }
+      const stubbedSendStatus = sinon.stub()
+      const response = { sendStatus: stubbedSendStatus }
+      const stubbedFindOne = sinon.stub(models.villains, 'findOne').returns(null)
+
+      await getVillainBySlug(request, response)
+      expect(stubbedFindOne).to.have.been.calledWith({ where: { slug: 'xyz' } })
+      expect(stubbedSendStatus).to.have.been.calledwith(404)
+    })
   })
   describe('addNewVillain', () => {
     it('accepts new villain details,saves them as a new villain and returns the saved record with a 201 status', async () => {

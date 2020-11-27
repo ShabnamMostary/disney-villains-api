@@ -10,7 +10,7 @@ const getVillainBySlug = async (request, response) => {
   const foundVillain = await models.villains.findOne({ where: { slug } })
 
   if (!foundVillain) {
-    return response.status(404).send('Not Found!')
+    return response.sendStatus(404)
   }
 
   return response.send(foundVillain)
