@@ -40,5 +40,17 @@ describe('Controllers - disneyVillainsApi', () => {
     })
   })
   describe('addNewVillain', () => {
+    it('accepts new villain details,saves them as a new villain and returns the saved record with a 201 status', async () => {
+      const request = { body: singleVillain }
+      const stubbedSend = sinon.stub()
+      const stubbedStatus = sinon.stub().returns({ send: stubbedSend })
+      const response = { status: stubbedStatus }
+      const stubbedCreate = sinon.stub(models.villains, 'create').returns(singleVillain)
+
+      await addNewVillain(request, response)
+      expect(stubbedCreate).to.have.been.calledWith(singleVillain)
+      expect(stubbedStatus).to.have.been.calledWith(201)
+      expect(stubbedSend).to.have.been.calledWith(singleVillain)
+    })
   })
 })
