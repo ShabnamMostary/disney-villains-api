@@ -1,8 +1,12 @@
 const models = require('../models') // model is an object with a property villains
 const getAllVillains = async (request, response) => {
-  const result = await models.villains.findAll()
+  try {
+    const result = await models.villains.findAll()
 
-  return response.send(result)
+    return response.send(result)
+  } catch (error) {
+    return response.status(500).send('Unable to retrieve Villains, please try again')
+  }
 }
 
 const getVillainBySlug = async (request, response) => {

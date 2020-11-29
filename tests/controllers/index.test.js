@@ -12,6 +12,7 @@ const { expect } = chai
 
 describe('Controllers - disneyVillainsApi', () => {
   let sandbox
+  let stubbedFindAll
   let stubbedFindOne
   let stubbedSend
   let response
@@ -21,6 +22,7 @@ describe('Controllers - disneyVillainsApi', () => {
 
   before(() => {
     sandbox = sinon.createSandbox()
+    stubbedFindAll = sandbox.stub(models.villains, 'findAll')
     stubbedFindOne = sandbox.stub(models.villains, 'findOne')
     stubbedSend = sandbox.stub()
     stubbedSendStatus = sandbox.stub()
@@ -43,12 +45,21 @@ describe('Controllers - disneyVillainsApi', () => {
   describe('getAllVillains', () => {
     it('retrieves a list of disney villains from the database and calls response.send() with the list', async () => {
       // stubbed findAll function to return villainsList
-      const stubbedFindAll = sinon.stub(models.villains, 'findAll').returns(villainsList)
+      stubbedFindAll.returns(villainsList)
 
       await getAllVillains({}, response)
       expect(stubbedFindAll).to.have.callCount(1)
       // send is a spy to verify the input of response.send(villainslist)
       expect(stubbedSend).to.have.been.calledWith(villainsList)
+    })
+    it('returns status 500 with an error message when database throws an error', async () => {
+      stubbedFindAll.throws('ERROR!')
+
+      await getAllVillains({}, response)
+
+      expect(stubbedFindAll).to.have.been.callCount(1)
+      expect(stubbedStatus).to.have.been.calledWith(500)
+      expect(stubbedStatusDotSend).to.have.been.calledWith('Unable to retrieve Villains, please try again')
     })
   })
   describe('getVillainBySlug', () => {
