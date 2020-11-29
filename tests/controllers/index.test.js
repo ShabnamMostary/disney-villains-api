@@ -32,7 +32,6 @@ describe('Controllers - disneyVillainsApi', () => {
     stubbedSendStatus = sandbox.stub()
     stubbedStatusDotSend = sandbox.stub()
     stubbedStatus = sandbox.stub()
-
     response = {
       send: stubbedSend, // created an object response with send property 
       sendStatus: stubbedSendStatus,
@@ -43,7 +42,6 @@ describe('Controllers - disneyVillainsApi', () => {
   beforeEach(() => {
     stubbedStatus.returns({ send: stubbedStatusDotSend })
   })
-
   afterEach(() => {
     sandbox.reset()
   })
@@ -52,7 +50,6 @@ describe('Controllers - disneyVillainsApi', () => {
     it('retrieves a list of disney villains from the database and calls response.send() with the list', async () => {
       // stubbed findAll function to return villainsList
       stubbedFindAll.returns(villainsList)
-
       await getAllVillains({}, response)
       expect(stubbedFindAll).to.have.callCount(1)
       // send is a spy to verify the input of response.send(villainslist)
@@ -60,18 +57,16 @@ describe('Controllers - disneyVillainsApi', () => {
     })
     it('returns status 500 with an error message when database throws an error', async () => {
       stubbedFindAll.throws('ERROR!')
-
       await getAllVillains({}, response)
-
-      expect(stubbedFindAll).to.have.been.callCount(1)
+      expect(stubbedFindAll).to.have.callCount(1)
       expect(stubbedStatus).to.have.been.calledWith(500)
       expect(stubbedStatusDotSend).to.have.been.calledWith('Unable to retrieve Villains, please try again')
     })
   })
   describe('getVillainBySlug', () => {
     it('retrieves the villain associated with the provided slug from the database and calls response.send with it', async () => {
-      // created a mock request object(request is a nested object where request.params.slug = Jafar"
       stubbedFindOne.returns(singleVillain)
+      // created a mock request object(request is a nested object where request.params.slug = Jafar"
       const request = { params: { slug: 'Jafar' } }
 
       await getVillainBySlug(request, response)
