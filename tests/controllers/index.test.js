@@ -11,20 +11,21 @@ chai.use(sinonChai)
 const { expect } = chai
 
 describe('Controllers - disneyVillainsApi', () => {
+  let sandbox
   let stubbedFindOne
   let stubbedSend
   let response
   let stubbedSendStatus
-  let stubbedStatus
   let stubbedStatusDotSend
+  let stubbedStatus
 
   before(() => {
-    stubbedFindOne = sinon.stub(models.villains, 'findOne')
-    // sinon.stub is a spy function
-    stubbedSend = sinon.stub()
-    stubbedSendStatus = sinon.stub()
-    stubbedStatusDotSend = sinon.stub()
-    stubbedStatus = sinon.stub()
+    sandbox = sinon.createSandbox()
+    stubbedFindOne = sandbox.stub(models.villains, 'findOne')
+    stubbedSend = sandbox.stub()
+    stubbedSendStatus = sandbox.stub()
+    stubbedStatusDotSend = sandbox.stub()
+    stubbedStatus = sandbox.stub()
 
     response = {
       send: stubbedSend, // created an object response with send property 
@@ -35,11 +36,8 @@ describe('Controllers - disneyVillainsApi', () => {
   })
 
   afterEach(() => {
-    stubbedFindOne.resetBehavior()
-    stubbedSend.resetBehavior()
-    stubbedSendStatus.resetBehavior()
-    stubbedStatusDotSend.resetBehavior()
-    stubbedStatus.resetBehavior()
+    sandbox.reset()
+    stubbedStatus.returns({ send: stubbedStatusDotSend })
   })
 
   describe('getAllVillains', () => {
@@ -71,12 +69,19 @@ describe('Controllers - disneyVillainsApi', () => {
       expect(stubbedFindOne).to.have.been.calledWith({ where: { slug: 'xyz' } })
       expect(stubbedSendStatus).to.have.been.calledWith(404)
     })
+    it('returns status 500 with an error message when database throws an error', async () => {
+      stubbedFindOne.throws('ERROR!')
+      const request = { params: { slug: 'throw-error' } }
+
+      await getVillainBySlug(request, response)
+      expect(stubbedFindOne).to.have.been.calledWith({ where: { slug: 'throw-error' } })
+      expect(stubbedStatus).to.have.been.calledWith(500)
+      expect(stubbedStatusDotSend).to.have.been.calledWith('Unable to retrieve Villain, please try again')
+    })
   })
   describe('addNewVillain', () => {
     it('accepts new villain details,saves them as a new villain and returns the saved record with a 201 status', async () => {
       const request = { body: singleVillain }
-
-      stubbedStatus.returns({ send: stubbedStatusDotSend })
       const stubbedCreate = sinon.stub(models.villains, 'create').returns(singleVillain)
 
       await addNewVillain(request, response)
