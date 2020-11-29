@@ -3,7 +3,9 @@ const chai = require('chai')
 const sinon = require('sinon')
 const sinonChai = require('sinon-chai')
 const models = require('../../models')
-const { before, afterEach, describe, it } = require('mocha')
+const {
+  before, beforeEach, afterEach, describe, it
+} = require('mocha')
 const { getAllVillains, getVillainBySlug, addNewVillain } = require('../../controllers/index')
 const { villainsList, singleVillain } = require('../mocks/villains')
 
@@ -14,6 +16,7 @@ describe('Controllers - disneyVillainsApi', () => {
   let sandbox
   let stubbedFindAll
   let stubbedFindOne
+  let stubbedCreate
   let stubbedSend
   let response
   let stubbedSendStatus
@@ -24,6 +27,7 @@ describe('Controllers - disneyVillainsApi', () => {
     sandbox = sinon.createSandbox()
     stubbedFindAll = sandbox.stub(models.villains, 'findAll')
     stubbedFindOne = sandbox.stub(models.villains, 'findOne')
+    stubbedCreate = sandbox.stub(models.villains, 'create')
     stubbedSend = sandbox.stub()
     stubbedSendStatus = sandbox.stub()
     stubbedStatusDotSend = sandbox.stub()
@@ -36,10 +40,12 @@ describe('Controllers - disneyVillainsApi', () => {
 
     }
   })
+  beforeEach(() => {
+    stubbedStatus.returns({ send: stubbedStatusDotSend })
+  })
 
   afterEach(() => {
     sandbox.reset()
-    stubbedStatus.returns({ send: stubbedStatusDotSend })
   })
 
   describe('getAllVillains', () => {
@@ -92,13 +98,22 @@ describe('Controllers - disneyVillainsApi', () => {
   })
   describe('addNewVillain', () => {
     it('accepts new villain details,saves them as a new villain and returns the saved record with a 201 status', async () => {
+      stubbedCreate.returns(singleVillain)
       const request = { body: singleVillain }
-      const stubbedCreate = sinon.stub(models.villains, 'create').returns(singleVillain)
 
       await addNewVillain(request, response)
       expect(stubbedCreate).to.have.been.calledWith(singleVillain)
       expect(stubbedStatus).to.have.been.calledWith(201)
       expect(stubbedStatusDotSend).to.have.been.calledWith(singleVillain)
+    })
+    it('returns status 500 with an error message when database throws an error', async () => {
+      stubbedCreate.throws('ERROR!')
+      const request = { body: singleVillain }
+
+      await addNewVillain(request, response)
+      expect(stubbedCreate).to.have.been.calledWith(singleVillain)
+      expect(stubbedStatus).to.have.been.calledWith(500)
+      expect(stubbedStatusDotSend).to.have.been.calledWith('Unable to save Villain, please try again')
     })
   })
 })
